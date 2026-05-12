@@ -4,53 +4,126 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SpringAI Chat</title>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&family=MedievalSharp&family=IM+Fell+English:ital@0;1&family=Cinzel:wght@400;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    /* ── Base (helper theme) ── */
     :root {
-      --bg:       #0d0d0f;
-      --surface:  #16161a;
-      --border:   #2a2a30;
-      --accent:   #7fff6e;
-      --accent2:  #ff6e6e;
-      --accent3:  #6eb5ff;
-      --text:     #e8e8e0;
-      --muted:    #6b6b72;
-      --user-bg:  #1e2a1e;
-      --ai-bg:    #1a1a22;
-      --radius:   12px;
-      --mono:     'Space Mono', monospace;
-      --display:  'Syne', sans-serif;
+      --bg:         #0d0d0f;
+      --surface:    #16161a;
+      --border:     #2a2a30;
+      --accent:     #7fff6e;
+      --text:       #e8e8e0;
+      --muted:      #6b6b72;
+      --user-bg:    #1e2a1e;
+      --ai-bg:      #1a1a22;
+      --btn-active-bg: #0f1f0f;
+      --radius:     12px;
+      --font-body:  'Space Mono', monospace;
+      --font-head:  'Syne', sans-serif;
+      --bg-pattern: none;
+      --header-color: #7fff6e;
+    }
+
+    /* ── Themes ── */
+    body.theme-helper {
+      --bg: #0d0d0f; --surface: #16161a; --border: #2a2a30;
+      --accent: #7fff6e; --user-bg: #1e2a1e; --ai-bg: #1a1a22;
+      --btn-active-bg: #0f1f0f; --header-color: #7fff6e;
+      --font-body: 'Space Mono', monospace; --font-head: 'Syne', sans-serif;
+      --bg-pattern: radial-gradient(circle at 20% 80%, rgba(127,255,110,0.04) 0%, transparent 50%);
+    }
+
+    body.theme-pirate {
+      --bg: #0e0a06; --surface: #1a1208; --border: #3d2e10;
+      --accent: #d4a017; --user-bg: #1f1608; --ai-bg: #120e04;
+      --btn-active-bg: #1f1608; --header-color: #d4a017;
+      --font-body: 'IM Fell English', serif; --font-head: 'IM Fell English', serif;
+      --bg-pattern: repeating-linear-gradient(45deg, rgba(212,160,23,0.03) 0px, rgba(212,160,23,0.03) 1px, transparent 1px, transparent 10px);
+      --muted: #7a6030;
+    }
+
+    body.theme-coder {
+      --bg: #050810; --surface: #0a0f1a; --border: #1a2a40;
+      --accent: #00d4ff; --user-bg: #0a1520; --ai-bg: #06100a;
+      --btn-active-bg: #061525; --header-color: #00d4ff;
+      --font-body: 'Orbitron', monospace; --font-head: 'Orbitron', monospace;
+      --bg-pattern: linear-gradient(0deg, rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      --muted: #2a5a6a;
+    }
+
+    body.theme-yoda {
+      --bg: #060e06; --surface: #0d160d; --border: #1a3020;
+      --accent: #88cc44; --user-bg: #0e1e0e; --ai-bg: #091209;
+      --btn-active-bg: #0e1e0e; --header-color: #88cc44;
+      --font-body: 'Space Mono', monospace; --font-head: 'Cinzel', serif;
+      --bg-pattern: radial-gradient(ellipse at 50% 100%, rgba(136,204,68,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse at 20% 20%, rgba(68,204,68,0.04) 0%, transparent 40%);
+      --muted: #3a6030;
+    }
+
+    body.theme-gandalf {
+      --bg: #0a0812; --surface: #120f1c; --border: #2a2040;
+      --accent: #c0a060; --user-bg: #18141e; --ai-bg: #0e0c18;
+      --btn-active-bg: #1a1428; --header-color: #c0a060;
+      --font-body: 'IM Fell English', serif; --font-head: 'Cinzel', serif;
+      --bg-pattern: radial-gradient(circle at 70% 30%, rgba(192,160,96,0.05) 0%, transparent 50%),
+      radial-gradient(circle at 30% 80%, rgba(120,80,200,0.04) 0%, transparent 40%);
+      --muted: #5a4a70;
+    }
+
+    body.theme-wukong {
+      --bg: #0e0600; --surface: #1a0e00; --border: #3d1a00;
+      --accent: #ff6a00; --user-bg: #1f1000; --ai-bg: #140800;
+      --btn-active-bg: #1f1000; --header-color: #ff6a00;
+      --font-body: 'Space Mono', monospace; --font-head: 'Syne', sans-serif;
+      --bg-pattern: radial-gradient(circle at 80% 20%, rgba(255,106,0,0.08) 0%, transparent 40%),
+      radial-gradient(circle at 20% 80%, rgba(255,180,0,0.05) 0%, transparent 40%);
+      --muted: #6a3010;
+    }
+
+    body.theme-cockysage {
+      --bg: #0c0010; --surface: #160020; --border: #3a0060;
+      --accent: #e040fb; --user-bg: #1a0028; --ai-bg: #100018;
+      --btn-active-bg: #1a0028; --header-color: #e040fb;
+      --font-body: 'Space Mono', monospace; --font-head: 'Cinzel', serif;
+      --bg-pattern: radial-gradient(circle at 50% 0%, rgba(224,64,251,0.1) 0%, transparent 50%),
+      repeating-linear-gradient(60deg, rgba(224,64,251,0.02) 0px, rgba(224,64,251,0.02) 1px, transparent 1px, transparent 20px);
+      --muted: #6a20a0;
     }
 
     body {
-      background: var(--bg);
+      background-color: var(--bg);
+      background-image: var(--bg-pattern);
       color: var(--text);
-      font-family: var(--mono);
+      font-family: var(--font-body);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       padding: 24px 16px;
+      transition: background-color 0.5s ease, color 0.3s ease;
     }
 
-    /* ── Header ── */
     header {
       width: 100%;
-      max-width: 720px;
+      max-width: 780px;
       display: flex;
       align-items: baseline;
       gap: 12px;
-      margin-bottom: 28px;
+      margin-bottom: 24px;
     }
 
     header h1 {
-      font-family: var(--display);
+      font-family: var(--font-head);
       font-size: 2rem;
       font-weight: 800;
       letter-spacing: -1px;
-      color: var(--accent);
+      color: var(--header-color);
+      transition: color 0.4s ease;
     }
 
     header span {
@@ -58,68 +131,51 @@
       color: var(--muted);
       letter-spacing: 2px;
       text-transform: uppercase;
+      transition: color 0.4s ease;
     }
 
-    /* ── Personality selector ── */
+    /* ── Persona buttons ── */
     .personas {
       width: 100%;
-      max-width: 720px;
-      display: flex;
-      gap: 10px;
+      max-width: 780px;
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
       margin-bottom: 20px;
     }
 
     .persona-btn {
-      flex: 1;
-      padding: 12px 8px;
+      padding: 10px 4px;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       color: var(--muted);
-      font-family: var(--mono);
-      font-size: 0.78rem;
+      font-family: var(--font-body);
+      font-size: 0.65rem;
       cursor: pointer;
-      transition: all 0.18s ease;
+      transition: all 0.25s ease;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 6px;
-      letter-spacing: 1px;
+      gap: 5px;
+      letter-spacing: 0.5px;
       text-transform: uppercase;
     }
 
-    .persona-btn .emoji { font-size: 1.4rem; }
-
-    .persona-btn:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
+    .persona-btn .emoji { font-size: 1.3rem; }
+    .persona-btn:hover  { border-color: var(--accent); color: var(--accent); }
 
     .persona-btn.active {
-      background: #0f1f0f;
+      background: var(--btn-active-bg);
       border-color: var(--accent);
       color: var(--accent);
-      box-shadow: 0 0 16px rgba(127,255,110,0.12);
-    }
-
-    .persona-btn.active[data-p="pirate"] {
-      background: #1f150f;
-      border-color: var(--accent2);
-      color: var(--accent2);
-      box-shadow: 0 0 16px rgba(255,110,110,0.12);
-    }
-
-    .persona-btn.active[data-p="coder"] {
-      background: #0f141f;
-      border-color: var(--accent3);
-      color: var(--accent3);
-      box-shadow: 0 0 16px rgba(110,181,255,0.12);
+      box-shadow: 0 0 16px rgba(var(--accent-rgb, 127,255,110), 0.15);
     }
 
     /* ── Chat window ── */
     .chat-window {
       width: 100%;
-      max-width: 720px;
+      max-width: 780px;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
@@ -130,6 +186,7 @@
       flex-direction: column;
       gap: 14px;
       scroll-behavior: smooth;
+      transition: background 0.5s ease, border-color 0.4s ease;
     }
 
     .chat-window::-webkit-scrollbar { width: 4px; }
@@ -144,7 +201,7 @@
       line-height: 2;
     }
 
-    .empty-state .big { font-size: 2rem; margin-bottom: 8px; }
+    .empty-state .big { font-size: 2.5rem; margin-bottom: 8px; }
 
     /* ── Messages ── */
     .msg {
@@ -167,59 +224,58 @@
       padding: 0 4px;
     }
 
-    .msg.user .msg-label { color: var(--accent); align-self: flex-end; }
     .msg.user { align-items: flex-end; }
+    .msg.user .msg-label { color: var(--accent); }
 
     .msg-bubble {
       max-width: 82%;
       padding: 12px 16px;
       border-radius: var(--radius);
       font-size: 0.88rem;
-      line-height: 1.65;
+      line-height: 1.7;
       white-space: pre-wrap;
       word-break: break-word;
+      transition: background 0.4s ease, border-color 0.4s ease;
     }
 
     .msg.user .msg-bubble {
       background: var(--user-bg);
-      border: 1px solid rgba(127,255,110,0.2);
-      color: var(--text);
+      border: 1px solid var(--accent);
       border-bottom-right-radius: 4px;
+      opacity: 0.9;
     }
 
     .msg.ai .msg-bubble {
       background: var(--ai-bg);
       border: 1px solid var(--border);
-      color: var(--text);
       border-bottom-left-radius: 4px;
     }
 
-    /* typing indicator */
+    /* typing */
     .typing .msg-bubble {
-      display: flex;
-      gap: 5px;
-      align-items: center;
+      display: flex; gap: 5px; align-items: center;
       padding: 14px 18px;
     }
 
     .dot {
       width: 6px; height: 6px;
-      background: var(--muted);
+      background: var(--accent);
       border-radius: 50%;
       animation: bounce 1.2s infinite;
+      opacity: 0.7;
     }
     .dot:nth-child(2) { animation-delay: 0.2s; }
     .dot:nth-child(3) { animation-delay: 0.4s; }
 
     @keyframes bounce {
       0%, 60%, 100% { transform: translateY(0); }
-      30%            { transform: translateY(-5px); }
+      30%            { transform: translateY(-6px); }
     }
 
-    /* ── Input area ── */
+    /* ── Input ── */
     .input-area {
       width: 100%;
-      max-width: 720px;
+      max-width: 780px;
       display: flex;
       gap: 10px;
       margin-top: 14px;
@@ -231,42 +287,41 @@
       border: 1px solid var(--border);
       border-radius: var(--radius);
       color: var(--text);
-      font-family: var(--mono);
+      font-family: var(--font-body);
       font-size: 0.88rem;
       padding: 14px 16px;
       resize: none;
       height: 54px;
       line-height: 1.5;
-      transition: border-color 0.18s;
+      transition: border-color 0.2s, background 0.4s;
       outline: none;
     }
 
     textarea:focus { border-color: var(--accent); }
-
     textarea::placeholder { color: var(--muted); }
 
     .send-btn {
       background: var(--accent);
-      color: #0d0d0f;
+      color: var(--bg);
       border: none;
       border-radius: var(--radius);
       padding: 0 22px;
-      font-family: var(--display);
+      font-family: var(--font-head);
       font-weight: 700;
       font-size: 0.88rem;
       cursor: pointer;
       letter-spacing: 1px;
-      transition: all 0.18s;
+      transition: all 0.2s;
       white-space: nowrap;
     }
 
-    .send-btn:hover { background: #a0ffb0; }
-    .send-btn:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
+    .send-btn:hover   { filter: brightness(1.2); }
+    .send-btn:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; filter: none; }
 
     /* ── Session info ── */
     .session-info {
       width: 100%;
-      max-width: 720px;
+      max-width: 780px;
       margin-top: 10px;
       font-size: 0.68rem;
       color: var(--muted);
@@ -279,7 +334,7 @@
       background: none;
       border: none;
       color: var(--muted);
-      font-family: var(--mono);
+      font-family: var(--font-body);
       font-size: 0.68rem;
       cursor: pointer;
       letter-spacing: 1px;
@@ -287,90 +342,123 @@
       transition: color 0.15s;
     }
 
-    .clear-btn:hover { color: var(--accent2); }
+    .clear-btn:hover { color: var(--accent); }
 
     .error-bubble {
       background: #1f0f0f;
       border: 1px solid rgba(255,110,110,0.3);
-      color: var(--accent2);
+      color: #ff6e6e;
       font-size: 0.82rem;
       padding: 10px 14px;
       border-radius: var(--radius);
       max-width: 82%;
     }
+
+    /* ── Theme transition overlay ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: var(--accent);
+      opacity: 0;
+      transition: opacity 0.15s ease;
+      z-index: 999;
+    }
+
+    body.switching::before { opacity: 0.04; }
   </style>
 </head>
-<body>
+<body class="theme-helper">
 
 <header>
-  <h1>SpringAI</h1>
-  <span>middleware chat</span>
+  <h1 id="appTitle">SpringAI</h1>
+  <span id="appSubtitle">middleware chat</span>
 </header>
 
-<!-- Personality picker -->
 <div class="personas">
-  <button class="persona-btn active" data-p="helper">
-    <span class="emoji">🤝</span>
-    Helper
-  </button>
-  <button class="persona-btn" data-p="pirate">
-    <span class="emoji">🏴‍☠️</span>
-    Pirate
-  </button>
-  <button class="persona-btn" data-p="coder">
-    <span class="emoji">💻</span>
-    Coder
-  </button>
+  <button class="persona-btn active" data-p="helper"    data-theme="helper"    data-emoji="🤝"><span class="emoji">🤝</span>Helper</button>
+  <button class="persona-btn"        data-p="pirate"    data-theme="pirate"    data-emoji="🏴‍☠️"><span class="emoji">🏴‍☠️</span>Pirate</button>
+  <button class="persona-btn"        data-p="coder"     data-theme="coder"     data-emoji="💻"><span class="emoji">💻</span>Coder</button>
+  <button class="persona-btn"        data-p="yoda"      data-theme="yoda"      data-emoji="🌿"><span class="emoji">🌿</span>Yoda</button>
+  <button class="persona-btn"        data-p="gandalf"   data-theme="gandalf"   data-emoji="🧙"><span class="emoji">🧙</span>Gandalf</button>
+  <button class="persona-btn"        data-p="wukong"    data-theme="wukong"    data-emoji="🐵"><span class="emoji">🐵</span>Wukong</button>
+  <button class="persona-btn"        data-p="cockysage" data-theme="cockysage" data-emoji="🎩"><span class="emoji">🎩</span>Cocky Sage</button>
 </div>
 
-<!-- Chat window -->
 <div class="chat-window" id="chatWindow">
   <div class="empty-state" id="emptyState">
-    <div class="big">💬</div>
+    <div class="big" id="emptyEmoji">🤝</div>
     Välj en personlighet och skriv ett meddelande.<br/>
     Konversationshistorik sparas per session.
   </div>
 </div>
 
-<!-- Input -->
 <div class="input-area">
-  <textarea id="msgInput" placeholder="Skriv ett meddelande..." rows="1"></textarea>
+  <textarea id="msgInput" placeholder="Skriv ett meddelande..."></textarea>
   <button class="send-btn" id="sendBtn">Skicka</button>
 </div>
 
-<!-- Session info -->
 <div class="session-info">
   <span id="sessionLabel">SESSION: genereras vid första meddelande</span>
   <button class="clear-btn" id="clearBtn">✕ Ny session</button>
 </div>
 
 <script>
+  // Per-theme config
+  const themes = {
+    helper:    { title: 'SpringAI',    subtitle: 'middleware chat',      placeholder: 'Skriv ett meddelande...',       send: 'Skicka' },
+    pirate:    { title: '☠ SpringAI',  subtitle: 'speak yer mind, landlubber', placeholder: "What say ye, matey...",  send: 'Arrr!' },
+    coder:     { title: 'SpringAI.exe',subtitle: 'runtime: optimal',     placeholder: '> input query...',              send: 'RUN'    },
+    yoda:      { title: 'SpringAI',    subtitle: 'wise, the answers are', placeholder: 'Ask, you must...',             send: 'Speak'  },
+    gandalf:   { title: 'SpringAI',    subtitle: 'you shall not be confused', placeholder: 'Seek wisdom here...',      send: 'Ask'    },
+    wukong:    { title: '齐天大圣 AI', subtitle: 'the monkey king answers', placeholder: 'Challenge me, mortal...',    send: '出击!'  },
+    cockysage: { title: 'SpringAI',    subtitle: 'obviously superior',   placeholder: 'Go on then, ask your question...', send: 'Fine' },
+  };
+
   let currentPersonality = 'helper';
   let sessionId = null;
   let loading = false;
+  let currentTheme = 'helper';
 
-  const chatWindow  = document.getElementById('chatWindow');
-  const emptyState  = document.getElementById('emptyState');
-  const msgInput    = document.getElementById('msgInput');
-  const sendBtn     = document.getElementById('sendBtn');
+  const body         = document.body;
+  const chatWindow   = document.getElementById('chatWindow');
+  const emptyState   = document.getElementById('emptyState');
+  const emptyEmoji   = document.getElementById('emptyEmoji');
+  const msgInput     = document.getElementById('msgInput');
+  const sendBtn      = document.getElementById('sendBtn');
   const sessionLabel = document.getElementById('sessionLabel');
-  const clearBtn    = document.getElementById('clearBtn');
+  const clearBtn     = document.getElementById('clearBtn');
+  const appTitle     = document.getElementById('appTitle');
+  const appSubtitle  = document.getElementById('appSubtitle');
 
-  // Persona buttons
+  function switchTheme(theme, emoji) {
+    body.classList.add('switching');
+    setTimeout(() => {
+      body.className = `theme-${theme}`;
+      body.classList.remove('switching');
+    }, 150);
+
+    const cfg = themes[theme];
+    appTitle.textContent     = cfg.title;
+    appSubtitle.textContent  = cfg.subtitle;
+    msgInput.placeholder     = cfg.placeholder;
+    sendBtn.textContent      = cfg.send;
+    emptyEmoji.textContent   = emoji;
+    currentTheme = theme;
+  }
+
   document.querySelectorAll('.persona-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.persona-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       currentPersonality = btn.dataset.p;
+      switchTheme(btn.dataset.theme, btn.dataset.emoji);
     });
   });
 
-  // Send on Enter (Shift+Enter = newline)
   msgInput.addEventListener('keydown', e => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
   });
 
   sendBtn.addEventListener('click', sendMessage);
@@ -385,11 +473,10 @@
 
   function appendMsg(role, text) {
     emptyState.style.display = 'none';
-
-    const wrap = document.createElement('div');
+    const wrap   = document.createElement('div');
     wrap.className = `msg ${role}`;
 
-    const label = document.createElement('div');
+    const label  = document.createElement('div');
     label.className = 'msg-label';
     label.textContent = role === 'user' ? 'Du' : currentPersonality.toUpperCase();
 
@@ -401,16 +488,15 @@
     wrap.appendChild(bubble);
     chatWindow.appendChild(wrap);
     chatWindow.scrollTop = chatWindow.scrollHeight;
-    return wrap;
   }
 
   function showTyping() {
     emptyState.style.display = 'none';
-    const wrap = document.createElement('div');
+    const wrap   = document.createElement('div');
     wrap.className = 'msg ai typing';
     wrap.id = 'typingIndicator';
 
-    const label = document.createElement('div');
+    const label  = document.createElement('div');
     label.className = 'msg-label';
     label.textContent = currentPersonality.toUpperCase();
 
@@ -441,21 +527,17 @@
     showTyping();
 
     try {
-      const res = await fetch('/api/v1/chat', {
+      const res  = await fetch('/api/v1/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          personality: currentPersonality,
-          message: text,
-          sessionId: sessionId
-        })
+        body: JSON.stringify({ personality: currentPersonality, message: text, sessionId })
       });
 
       const data = await res.json();
       removeTyping();
 
       if (!res.ok) {
-        const errWrap = document.createElement('div');
+        const errWrap   = document.createElement('div');
         errWrap.className = 'msg ai';
         const errBubble = document.createElement('div');
         errBubble.className = 'error-bubble';
@@ -467,10 +549,9 @@
         sessionLabel.textContent = `SESSION: ${sessionId}`;
         appendMsg('ai', data.reply);
       }
-
     } catch (err) {
       removeTyping();
-      const errWrap = document.createElement('div');
+      const errWrap   = document.createElement('div');
       errWrap.className = 'msg ai';
       const errBubble = document.createElement('div');
       errBubble.className = 'error-bubble';
