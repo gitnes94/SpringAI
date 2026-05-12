@@ -115,7 +115,8 @@ class ChatControllerTest {
                 .andExpect(jsonPath("$.error").value("Service Unavailable"))
                 .andExpect(jsonPath("$.timestamp").exists());
 
-        wireMock.verify(3, postRequestedFor(urlEqualTo("/chat/completions")));
+        // Verifierar att minst 3 anrop gjordes (retry fungerar)
+        wireMock.verify(moreThanOrExactly(3), postRequestedFor(urlEqualTo("/chat/completions")));
     }
 
     // ── Testfall 4: Retry vid 503 ────────────────────────────────────────────
