@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SpringAI Chat</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0d0d0f;
+      --surface:  #16161a;
+      --border:   #2a2a30;
+      --accent:   #7fff6e;
+      --accent2:  #ff6e6e;
+      --accent3:  #6eb5ff;
+      --text:     #e8e8e0;
+      --muted:    #6b6b72;
+      --user-bg:  #1e2a1e;
+      --ai-bg:    #1a1a22;
+      --radius:   12px;
+      --mono:     'Space Mono', monospace;
+      --display:  'Syne', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--mono);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px;
+    }
+
+    /* ── Header ── */
+    header {
+      width: 100%;
+      max-width: 720px;
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    header h1 {
+      font-family: var(--display);
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+      color: var(--accent);
+    }
+
+    header span {
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    /* ── Personality selector ── */
+    .personas {
+      width: 100%;
+      max-width: 720px;
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .persona-btn {
+      flex: 1;
+      padding: 12px 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .persona-btn .emoji { font-size: 1.4rem; }
+
+    .persona-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .persona-btn.active {
+      background: #0f1f0f;
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: 0 0 16px rgba(127,255,110,0.12);
+    }
+
+    .persona-btn.active[data-p="pirate"] {
+      background: #1f150f;
+      border-color: var(--accent2);
+      color: var(--accent2);
+      box-shadow: 0 0 16px rgba(255,110,110,0.12);
+    }
+
+    .persona-btn.active[data-p="coder"] {
+      background: #0f141f;
+      border-color: var(--accent3);
+      color: var(--accent3);
+      box-shadow: 0 0 16px rgba(110,181,255,0.12);
+    }
+
+    /* ── Chat window ── */
+    .chat-window {
+      width: 100%;
+      max-width: 720px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      height: 460px;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      scroll-behavior: smooth;
+    }
+
+    .chat-window::-webkit-scrollbar { width: 4px; }
+    .chat-window::-webkit-scrollbar-track { background: transparent; }
+    .chat-window::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    .empty-state {
+      margin: auto;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.8rem;
+      line-height: 2;
+    }
+
+    .empty-state .big { font-size: 2rem; margin-bottom: 8px; }
+
+    /* ── Messages ── */
+    .msg {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      animation: fadeUp 0.22s ease;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .msg-label {
+      font-size: 0.65rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 0 4px;
+    }
+
+    .msg.user .msg-label { color: var(--accent); align-self: flex-end; }
+    .msg.user { align-items: flex-end; }
+
+    .msg-bubble {
+      max-width: 82%;
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      font-size: 0.88rem;
+      line-height: 1.65;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .msg.user .msg-bubble {
+      background: var(--user-bg);
+      border: 1px solid rgba(127,255,110,0.2);
+      color: var(--text);
+      border-bottom-right-radius: 4px;
+    }
+
+    .msg.ai .msg-bubble {
+      background: var(--ai-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-bottom-left-radius: 4px;
+    }
+
+    /* typing indicator */
+    .typing .msg-bubble {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      padding: 14px 18px;
+    }
+
+    .dot {
+      width: 6px; height: 6px;
+      background: var(--muted);
+      border-radius: 50%;
+      animation: bounce 1.2s infinite;
+    }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes bounce {
+      0%, 60%, 100% { transform: translateY(0); }
+      30%            { transform: translateY(-5px); }
+    }
+
+    /* ── Input area ── */
+    .input-area {
+      width: 100%;
+      max-width: 720px;
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    textarea {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 0.88rem;
+      padding: 14px 16px;
+      resize: none;
+      height: 54px;
+      line-height: 1.5;
+      transition: border-color 0.18s;
+      outline: none;
+    }
+
+    textarea:focus { border-color: var(--accent); }
+
+    textarea::placeholder { color: var(--muted); }
+
+    .send-btn {
+      background: var(--accent);
+      color: #0d0d0f;
+      border: none;
+      border-radius: var(--radius);
+      padding: 0 22px;
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      letter-spacing: 1px;
+      transition: all 0.18s;
+      white-space: nowrap;
+    }
+
+    .send-btn:hover { background: #a0ffb0; }
+    .send-btn:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
+
+    /* ── Session info ── */
+    .session-info {
+      width: 100%;
+      max-width: 720px;
+      margin-top: 10px;
+      font-size: 0.68rem;
+      color: var(--muted);
+      letter-spacing: 1px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .clear-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      cursor: pointer;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: color 0.15s;
+    }
+
+    .clear-btn:hover { color: var(--accent2); }
+
+    .error-bubble {
+      background: #1f0f0f;
+      border: 1px solid rgba(255,110,110,0.3);
+      color: var(--accent2);
+      font-size: 0.82rem;
+      padding: 10px 14px;
+      border-radius: var(--radius);
+      max-width: 82%;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>SpringAI</h1>
+  <span>middleware chat</span>
+</header>
+
+<!-- Personality picker -->
+<div class="personas">
+  <button class="persona-btn active" data-p="helper">
+    <span class="emoji">🤝</span>
+    Helper
+  </button>
+  <button class="persona-btn" data-p="pirate">
+    <span class="emoji">🏴‍☠️</span>
+    Pirate
+  </button>
+  <button class="persona-btn" data-p="coder">
+    <span class="emoji">💻</span>
+    Coder
+  </button>
+</div>
+
+<!-- Chat window -->
+<div class="chat-window" id="chatWindow">
+  <div class="empty-state" id="emptyState">
+    <div class="big">💬</div>
+    Välj en personlighet och skriv ett meddelande.<br/>
+    Konversationshistorik sparas per session.
+  </div>
+</div>
+
+<!-- Input -->
+<div class="input-area">
+  <textarea id="msgInput" placeholder="Skriv ett meddelande..." rows="1"></textarea>
+  <button class="send-btn" id="sendBtn">Skicka</button>
+</div>
+
+<!-- Session info -->
+<div class="session-info">
+  <span id="sessionLabel">SESSION: genereras vid första meddelande</span>
+  <button class="clear-btn" id="clearBtn">✕ Ny session</button>
+</div>
+
+<script>
+  let currentPersonality = 'helper';
+  let sessionId = null;
+  let loading = false;
+
+  const chatWindow  = document.getElementById('chatWindow');
+  const emptyState  = document.getElementById('emptyState');
+  const msgInput    = document.getElementById('msgInput');
+  const sendBtn     = document.getElementById('sendBtn');
+  const sessionLabel = document.getElementById('sessionLabel');
+  const clearBtn    = document.getElementById('clearBtn');
+
+  // Persona buttons
+  document.querySelectorAll('.persona-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.persona-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentPersonality = btn.dataset.p;
+    });
+  });
+
+  // Send on Enter (Shift+Enter = newline)
+  msgInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  sendBtn.addEventListener('click', sendMessage);
+
+  clearBtn.addEventListener('click', () => {
+    sessionId = null;
+    sessionLabel.textContent = 'SESSION: genereras vid första meddelande';
+    chatWindow.innerHTML = '';
+    chatWindow.appendChild(emptyState);
+    emptyState.style.display = '';
+  });
+
+  function appendMsg(role, text) {
+    emptyState.style.display = 'none';
+
+    const wrap = document.createElement('div');
+    wrap.className = `msg ${role}`;
+
+    const label = document.createElement('div');
+    label.className = 'msg-label';
+    label.textContent = role === 'user' ? 'Du' : currentPersonality.toUpperCase();
+
+    const bubble = document.createElement('div');
+    bubble.className = 'msg-bubble';
+    bubble.textContent = text;
+
+    wrap.appendChild(label);
+    wrap.appendChild(bubble);
+    chatWindow.appendChild(wrap);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+    return wrap;
+  }
+
+  function showTyping() {
+    emptyState.style.display = 'none';
+    const wrap = document.createElement('div');
+    wrap.className = 'msg ai typing';
+    wrap.id = 'typingIndicator';
+
+    const label = document.createElement('div');
+    label.className = 'msg-label';
+    label.textContent = currentPersonality.toUpperCase();
+
+    const bubble = document.createElement('div');
+    bubble.className = 'msg-bubble';
+    bubble.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+
+    wrap.appendChild(label);
+    wrap.appendChild(bubble);
+    chatWindow.appendChild(wrap);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+  }
+
+  function removeTyping() {
+    const t = document.getElementById('typingIndicator');
+    if (t) t.remove();
+  }
+
+  async function sendMessage() {
+    const text = msgInput.value.trim();
+    if (!text || loading) return;
+
+    loading = true;
+    sendBtn.disabled = true;
+    msgInput.value = '';
+
+    appendMsg('user', text);
+    showTyping();
+
+    try {
+      const res = await fetch('/api/v1/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          personality: currentPersonality,
+          message: text,
+          sessionId: sessionId
+        })
+      });
+
+      const data = await res.json();
+      removeTyping();
+
+      if (!res.ok) {
+        const errWrap = document.createElement('div');
+        errWrap.className = 'msg ai';
+        const errBubble = document.createElement('div');
+        errBubble.className = 'error-bubble';
+        errBubble.textContent = `⚠ ${data.message || 'Något gick fel'}`;
+        errWrap.appendChild(errBubble);
+        chatWindow.appendChild(errWrap);
+      } else {
+        sessionId = data.sessionId;
+        sessionLabel.textContent = `SESSION: ${sessionId}`;
+        appendMsg('ai', data.reply);
+      }
+
+    } catch (err) {
+      removeTyping();
+      const errWrap = document.createElement('div');
+      errWrap.className = 'msg ai';
+      const errBubble = document.createElement('div');
+      errBubble.className = 'error-bubble';
+      errBubble.textContent = '⚠ Kunde inte nå servern';
+      errWrap.appendChild(errBubble);
+      chatWindow.appendChild(errWrap);
+    }
+
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+    loading = false;
+    sendBtn.disabled = false;
+    msgInput.focus();
+  }
+</script>
+</body>
+</html>
